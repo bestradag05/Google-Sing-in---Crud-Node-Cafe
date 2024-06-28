@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Sign-In</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <meta name="google-signin-client_id" content="923477255458-g6u6mg2oru6ck76931b0r6cip7toosbn.apps.googleusercontent.com">
+</head>
+<body>
+    <h1>Google Sign-In</h1>
+
+    <div id="g_id_onload"
+         data-client_id="923477255458-g6u6mg2oru6ck76931b0r6cip7toosbn.apps.googleusercontent.com"
+         data-callback="handleCredentialResponse"
+         data-auto_prompt="true">
+    </div>
+
+    <div class="g_id_signin" data-type="standard"></div>
+
+    <script>
+        function handleCredentialResponse(response) {
+            var url = (window.location.hostname.includes('localhost'))
+                        ? 'http://localhost:3000/api/auth/google' // local
+                        :  '' // producción
+
+            // Enviar el token al servidor para obtener información del usuario
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id_token: response.credential })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Manejar la respuesta del servidor con la información del usuario
+                console.log(data);
+                alert(`Bienvenido ${data.usuario.nombre}`);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>
